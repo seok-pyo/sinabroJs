@@ -28,9 +28,9 @@ async function main() {
         <div class="flex items-center justify-between">
           <span>Price: ${product.regularPrice}</span>
           <div>
-            <button type="button" class="bg-green-300 hover:bg-green-600 py-1 px-3 rounded-full">-</button>
+            <button type="button" class="bg-green-300 hover:bg-green-600 py-1 px-3 rounded-full btn-decrease">-</button>
             <span class="hidden text-green-700">3</span>
-            <button type="button" class="bg-green-300 hover:bg-green-600 py-1 px-3 rounded-full">+</button>
+            <button type="button" class="bg-green-300 hover:bg-green-600 py-1 px-3 rounded-full btn-increase">+</button>
           </div>
         </div>
       </div>
@@ -38,5 +38,36 @@ async function main() {
     )
     .join('');
 }
+
+document.querySelector('#products').addEventListener('click', (event) => {
+  const targetElement = event.target;
+  if (targetElement.matches('.btn-decrease')) {
+    console.log('decrease');
+  } else if (targetElement.matches('.btn-increase')) {
+    console.log('increase');
+  }
+});
+
+/*
+Advanced event handling
+모든 요소를 배열을 순회하면서 이벤트 리스터를 부착
+Array.from(document.querySelectorAll(".btn-decrease")).forEach(button => {
+    button.addEventListener("click", () => {
+      ...
+      })
+  })
+
+docuemnt.querySelector("#products").addEventLitener("click", (event) => {
+  const targetElement = event.target;
+  if(targetElement.matches(".btn-decrease")) {
+    console.log("decrease")
+  } else if(targetElement.maches(".btn-increase")){
+    console.log("increase")
+  }
+  
+  })
+
+
+ */
 
 main();
