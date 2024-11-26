@@ -39,8 +39,21 @@ async function main() {
     .join('');
 }
 
+function findElement(startingElement, selector) {
+  let currentElement = startingElement;
+  while (currentElement) {
+    if (currentElement.matches(selector)) {
+      return currentElement;
+    }
+    currentElement = currentElement.parentElement;
+  }
+  return null;
+}
+
 document.querySelector('#products').addEventListener('click', (event) => {
+  console.log(event.target);
   const targetElement = event.target;
+  const producetElement = findElement(targetElement, '.product');
   if (targetElement.matches('.btn-decrease')) {
     console.log('decrease');
   } else if (targetElement.matches('.btn-increase')) {
