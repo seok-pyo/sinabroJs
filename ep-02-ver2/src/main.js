@@ -59,6 +59,47 @@ async function main() {
   });
   const countMap = {};
 
+  const updateProductCount = (productId) => {
+    const productElement = document.querySelector(
+      `.product[data-product-id='${productId}']`
+    );
+    const cartCount = productElement.querySelector('.cart-count');
+    cartCount.innerHTML = countMap[productId];
+    if (countMap[productId] === 0) {
+      cartCount.innerHTML = '';
+    }
+  };
+
+  const updateCart = () => {
+    const productIds = Object.keys(countMap);
+    document.querySelector('.cart_items').innerHTML = productIds
+      .map((productId) => {
+        const productInCart = productMap[productId];
+        if (countMap[productId] === 0) return '';
+        return makeTemplate(productInCart, countMap[productId]);
+      })
+      .join('');
+    document.querySelector('.totalCount').innerHTML = sumCounts(countMap);
+  };
+
+  const increaseCount = (productId) => {
+    if (countMap[productId] === undefined) {
+      countMap[productId] = 0;
+    }
+    countMap[productId] += 1;
+    updateProductCount(productId);
+    updateCart();
+  };
+
+  const decreaseCount = (productId) => {
+    if (countMap[productId] === undefined) {
+      countMap[productId] = 0;
+    }
+    countMap[productId] -= 1;
+    updateProductCount(productId);
+    updateCart();
+  };
+
   document.querySelector('#products').innerHTML = products
     .map((product) => makeTemplate(product))
     .join('');
@@ -69,37 +110,34 @@ async function main() {
     const productId = productElement.getAttribute('data-product-id');
     const product = products.find((product) => product.id === productId);
 
-    console.log(productId);
-    console.log(countMap);
+    if (
+      targetElement.matches('.btn-decrease') ||
+      targetElement.matches('.btn-increase')
+    ) {
+      if (targetElement.matches('.btn-decrease') && countMap[productId] > 0) {
+        decreaseCount(productId);
+      } else if (targetElement.matches('.btn-increase')) {
+        increaseCount(productId);
+      }
+    }
+  });
+
+  // main 함수 내에서 countMap을 공유하고 있기 떄문에 동일한 메서드 사용 가능
+  document.querySelector('.cart_items').addEventListener('click', (event) => {
+    const targetElement = event.target;
+    const productElement = findElement(targetElement, '.product');
+    const productId = productElement.getAttribute('data-product-id');
+    const product = products.find((product) => product.id === productId);
 
     if (
       targetElement.matches('.btn-decrease') ||
       targetElement.matches('.btn-increase')
     ) {
-      if (countMap[productId] === undefined) {
-        countMap[productId] = 0;
-      }
       if (targetElement.matches('.btn-decrease') && countMap[productId] > 0) {
-        countMap[productId] -= 1;
+        decreaseCount(productId);
       } else if (targetElement.matches('.btn-increase')) {
-        countMap[productId] += 1;
+        increaseCount(productId);
       }
-      const cartCount = productElement.querySelector('.cart-count');
-      cartCount.innerHTML = countMap[productId];
-
-      if (countMap[productId] === 0) {
-        cartCount.innerHTML = '';
-      } else {
-        const productIds = Object.keys(countMap);
-        document.querySelector('.cart_items').innerHTML = productIds
-          .map((productId) => {
-            const productInCart = productMap[productId];
-            return makeTemplate(productInCart, countMap[productId]);
-          })
-          .join('');
-      }
-
-      document.querySelector('.totalCount').innerHTML = sumCounts(countMap);
     }
   });
 
@@ -114,27 +152,5 @@ async function main() {
     document.body.classList.remove('displaying-cart');
   });
 }
-
-/*
-Advanced event handling
-모든 요소를 배열을 순회하면서 이벤트 리스터를 부착
-Array.from(document.querySelectorAll(".btn-decrease")).forEach(button => {
-    button.addEventListener("click", () => {
-      ...
-      })
-  })
-
-docuemnt.querySelector("#products").addEventLitener("click", (event) => {
-  const targetElement = event.target;
-  if(targetElement.matches(".btn-decrease")) {
-    console.log("decrease")
-  } else if(targetElement.maches(".btn-increase")){
-    console.log("increase")
-  }
-  
-  })
-
-
- */
 
 main();
